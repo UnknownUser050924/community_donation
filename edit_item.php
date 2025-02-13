@@ -65,27 +65,38 @@ unset($_SESSION['message'], $_SESSION['message_type']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Item</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
         }
         .container {
-            margin: 50px auto;
-            width: 400px;
-            padding: 20px;
             background: white;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 420px;
+            text-align: center;
         }
         h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #333;
         }
         .message {
             padding: 10px;
-            margin-bottom: 15px;
             border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
         }
         .success {
             background-color: #d4edda;
@@ -95,42 +106,49 @@ unset($_SESSION['message'], $_SESSION['message_type']);
             background-color: #f8d7da;
             color: #721c24;
         }
-        form {
-            text-align: left;
-        }
         label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
+            text-align: left;
         }
         input, select {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin-top: 5px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 6px;
+            transition: 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #007bff;
+            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
+            outline: none;
         }
         .hidden {
             display: none;
         }
         .btn-submit {
             margin-top: 15px;
-            padding: 10px;
-            background-color: #007bff;
+            padding: 12px;
+            background: #007bff;
             color: white;
             border: none;
             cursor: pointer;
             width: 100%;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: 0.3s;
         }
         .btn-submit:hover {
-            background-color: #0056b3;
+            background: #0056b3;
         }
         .back-link {
             display: block;
             margin-top: 15px;
             color: #007bff;
             text-decoration: none;
+            font-weight: bold;
         }
         .back-link:hover {
             text-decoration: underline;

@@ -43,61 +43,151 @@ $items_result = $stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Dashboard</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
+        body {
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* Header Navigation */
         .header {
+            background: #4A90E2;
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background: #f4f4f4;
+            padding: 15px 30px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header h2 {
+            font-size: 24px;
+            font-weight: bold;
         }
         .dropdown {
             position: relative;
             display: inline-block;
+        }
+        .dropdown button {
+            background: white;
+            color: #4A90E2;
+            padding: 8px 15px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
         }
         .dropdown-content {
             display: none;
             position: absolute;
             right: 0;
             background-color: white;
-            min-width: 150px;
+            min-width: 180px;
             box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
             z-index: 1;
+        }
+        .dropdown-content a {
+            color: #333;
+            padding: 12px;
+            display: block;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .dropdown-content a:hover {
+            background: #f1f1f1;
         }
         .dropdown:hover .dropdown-content {
             display: block;
         }
+
+        /* Filter Section */
         .filter-section {
-            margin: 20px 0;
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
+        .filter-section label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .filter-section select {
+            padding: 8px;
+            width: 200px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        .filter-section button {
+            background: #4A90E2;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .filter-section button:hover {
+            background: #357ABD;
+        }
+
+        /* Item List */
         .item-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
         }
         .item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 250px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        button {
-            background: blue;
+        .item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .item h3 {
+            color: #4A90E2;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .item p {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .item button {
+            background: #4A90E2;
             color: white;
+            padding: 8px 15px;
             border: none;
-            padding: 5px;
             cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
         }
-        button:hover {
-            background: darkblue;
+        .item button:hover {
+            background: #357ABD;
         }
     </style>
 </head>
 <body>
 
+<!-- Header -->
 <div class="header">
     <h2>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h2>
     <div class="dropdown">
