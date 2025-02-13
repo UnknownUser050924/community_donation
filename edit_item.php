@@ -27,28 +27,35 @@ if ($result->num_rows === 0) {
 }
 
 $item = $result->fetch_assoc();
+$isOtherType = !in_array($item['item_type'], ["Clothing", "Electronics", "Food", "Furniture"]);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $item_name = $_POST["item_name"];
-    $item_type = $_POST["item_type"] === "others" ? $_POST["other_item_type"] : $_POST["item_type"];
-    $quantity = $_POST["quantity"];
-    $state = $_POST["state"];
-    $address = $_POST["address"];
+    $item_name = trim($_POST["name"]);
+    $quantity = (int) $_POST["quantity"];
+    $state = trim($_POST["state"]);
+    $address = trim($_POST["address"]);
 
-    $updateQuery = $conn->prepare("UPDATE items SET item_name = ?, item_type = ?, quantity = ?, state = ?, address = ? WHERE id = ? AND donor_id = ?");
+    $item_type = ($_POST["item_type"] === "Others" && !empty($_POST["other_item_type"])) ? trim($_POST["other_item_type"]) : trim($_POST["item_type"]);
+
+    $updateQuery = $conn->prepare("UPDATE items SET name = ?, item_type = ?, quantity = ?, state = ?, address = ? WHERE id = ? AND donor_id = ?");
     $updateQuery->bind_param("ssissii", $item_name, $item_type, $quantity, $state, $address, $item_id, $donor_id);
 
     if ($updateQuery->execute()) {
-        $_SESSION['message'] = "Item updated successfully!";
+        $_SESSION['message'] = "✅ Item updated successfully!";
         $_SESSION['message_type'] = "success";
     } else {
-        $_SESSION['message'] = "Error updating item. Please try again.";
+        $_SESSION['message'] = "❌ Error updating item. Please try again.";
         $_SESSION['message_type'] = "error";
     }
 
     header("Location: donor_dashboard.php");
     exit();
 }
+
+// Retrieve session message
+$message = $_SESSION['message'] ?? "";
+$message_type = $_SESSION['message_type'] ?? "";
+unset($_SESSION['message'], $_SESSION['message_type']);
 ?>
 
 <!DOCTYPE html>
@@ -60,41 +67,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             text-align: center;
         }
-        form {
-            display: inline-block;
-            text-align: left;
+        .container {
+            margin: 50px auto;
+            width: 400px;
             padding: 20px;
-            border: 1px solid black;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
-            background-color: #f9f9f9;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        form {
+            text-align: left;
         }
         label {
             font-weight: bold;
+            display: block;
+            margin-top: 10px;
         }
         input, select {
             width: 100%;
-            padding: 5px;
-            margin: 5px 0;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         .hidden {
             display: none;
         }
         .btn-submit {
+            margin-top: 15px;
             padding: 10px;
-            background-color: #28a745;
+            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
             width: 100%;
+            border-radius: 5px;
         }
         .btn-submit:hover {
-            background-color: #218838;
+            background-color: #0056b3;
         }
         .back-link {
             display: block;
-            margin-top: 10px;
+            margin-top: 15px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
         }
     </style>
     <script>
@@ -102,7 +141,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             var itemType = document.getElementById("item_type");
             var otherTypeInput = document.getElementById("other_item_type");
 
-            if (itemType.value === "others") {
+            if (itemType.value === "Others") {
                 otherTypeInput.classList.remove("hidden");
                 otherTypeInput.required = true;
             } else {
@@ -114,50 +153,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-    <h2>✏️ Edit Item</h2>
-    
-    <?php if ($message) echo "<p><b>$message</b></p>"; ?>
+    <div class="container">
+        <h2>✏️ Edit Item</h2>
 
-    <form method="POST">
-        <label for="name">Item Name:</label>
-        <input type="text" name="name" value="<?= htmlspecialchars($item['name']) ?>" required>
+        <?php if (!empty($message)): ?>
+            <div class="message <?= $message_type === 'success' ? 'success' : 'error' ?>">
+                <?= htmlspecialchars($message) ?>
+            </div>
+        <?php endif; ?>
 
-        <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" value="<?= (int) $item['quantity'] ?>" required min="1">
+        <form method="POST">
+            <label for="name">Item Name:</label>
+            <input type="text" name="name" value="<?= htmlspecialchars($item['name']) ?>" required>
 
-        <label for="item_type">Item Type:</label>
-        <select name="item_type" id="item_type" onchange="toggleOtherType()" required>
-            <option value="clothing" <?= $item['item_type'] == 'clothing' ? 'selected' : '' ?>>Clothing</option>
-            <option value="electronics" <?= $item['item_type'] == 'electronics' ? 'selected' : '' ?>>Electronics</option>
-            <option value="food" <?= $item['item_type'] == 'food' ? 'selected' : '' ?>>Food</option>
-            <option value="furniture" <?= $item['item_type'] == 'furniture' ? 'selected' : '' ?>>Furniture</option>
-            <option value="others" <?= $isOtherType ? 'selected' : '' ?>>Others</option>
-        </select>
+            <label for="quantity">Quantity:</label>
+            <input type="number" name="quantity" value="<?= (int) $item['quantity'] ?>" required min="1">
 
-        <input type="text" name="other_item_type" id="other_item_type" 
-               class="<?= $isOtherType ? '' : 'hidden' ?>" 
-               placeholder="Enter item type" 
-               value="<?= $isOtherType ? htmlspecialchars($item['item_type']) : '' ?>">
+            <label for="item_type">Item Type:</label>
+            <select name="item_type" id="item_type" onchange="toggleOtherType()" required>
+                <option value="Clothing" <?= $item['item_type'] == 'Clothing' ? 'selected' : '' ?>>Clothing</option>
+                <option value="Electronics" <?= $item['item_type'] == 'Electronics' ? 'selected' : '' ?>>Electronics</option>
+                <option value="Food" <?= $item['item_type'] == 'Food' ? 'selected' : '' ?>>Food</option>
+                <option value="Furniture" <?= $item['item_type'] == 'Furniture' ? 'selected' : '' ?>>Furniture</option>
+                <option value="Others" <?= $isOtherType ? 'selected' : '' ?>>Others</option>
+            </select>
 
-        <label for="state">State:</label>
-        <select name="state" required>
-            <option value="Johor" <?= $item['state'] == 'Johor' ? 'selected' : '' ?>>Johor</option>
-            <option value="Kedah" <?= $item['state'] == 'Kedah' ? 'selected' : '' ?>>Kedah</option>
-            <option value="Kelantan" <?= $item['state'] == 'Kelantan' ? 'selected' : '' ?>>Kelantan</option>
-            <option value="Malacca" <?= $item['state'] == 'Malacca' ? 'selected' : '' ?>>Malacca</option>
-            <option value="Penang" <?= $item['state'] == 'Penang' ? 'selected' : '' ?>>Penang</option>
-            <option value="Sabah" <?= $item['state'] == 'Sabah' ? 'selected' : '' ?>>Sabah</option>
-            <option value="Sarawak" <?= $item['state'] == 'Sarawak' ? 'selected' : '' ?>>Sarawak</option>
-            <option value="Selangor" <?= $item['state'] == 'Selangor' ? 'selected' : '' ?>>Selangor</option>
-        </select>
+            <input type="text" name="other_item_type" id="other_item_type" 
+                   class="<?= $isOtherType ? '' : 'hidden' ?>" 
+                   placeholder="Enter item type" 
+                   value="<?= $isOtherType ? htmlspecialchars($item['item_type']) : '' ?>">
 
-        <label for="address">Address:</label>
-        <input type="text" name="address" value="<?= htmlspecialchars($item['address']) ?>" required>
+            <label for="state">State:</label>
+            <select name="state" required>
+                <?php 
+                $states = ["Johor", "Kedah", "Kelantan", "Malacca", "Penang", "Sabah", "Sarawak", "Selangor"];
+                foreach ($states as $state) {
+                    $selected = ($item['state'] == $state) ? 'selected' : '';
+                    echo "<option value='$state' $selected>$state</option>";
+                }
+                ?>
+            </select>
 
-        <button type="submit" class="btn-submit">Update Item</button>
-    </form>
+            <label for="address">Address:</label>
+            <input type="text" name="address" value="<?= htmlspecialchars($item['address']) ?>" required>
 
-    <a href="donor_dashboard.php" class="back-link">⬅️ Back to Dashboard</a>
+            <button type="submit" class="btn-submit">Update Item</button>
+        </form>
+
+        <a href="donor_dashboard.php" class="back-link">⬅️ Back to Dashboard</a>
+    </div>
 
 </body>
 </html>
