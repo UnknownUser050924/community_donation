@@ -132,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 
     <a href="reset_password.php" class="link">🔄 Reset Password</a>
+    <a href="register.php" class="link">📝 Register</a>
 </div>
-
 </body>
 </html>

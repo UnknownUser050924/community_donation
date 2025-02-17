@@ -46,9 +46,7 @@ $admin_name = $_SESSION["name"];
     <div class="container">
         <a href="admin_accounts.php" class="btn">Manage Accounts</a>
         <a href="admin_items.php" class="btn">Manage Items</a>
-        <a href="admin_history.php" class="btn">Activity History</a>
         <a href="logout_admin.php" class="btn" style="background-color: red;">Logout</a>
     </div>
-
 </body>
 </html>

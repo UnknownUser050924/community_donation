@@ -29,32 +29,95 @@ $result = $query->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Donor - Donated Item History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #28a745;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .empty-message {
+            font-style: italic;
+            color: #888;
+            padding: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h2>Donated Item History</h2>
-    <table border="1">
-        <tr>
-            <th>Item Name</th>
-            <th>Quantity</th>
-            <th>Received By</th>
-            <th>Delivery Date</th>
-        </tr>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['item_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['quantity']); ?></td>
-                    <td><?php echo htmlspecialchars($row['resident_name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['scheduled_date']); ?></td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="4">No donated items history yet.</td>
-            </tr>
-        <?php endif; ?>
-    </table>
 
-    <a href="donor_dashboard.php">Back to Dashboard</a>
+    <div class="container">
+        <h2>📜 Donated Item History</h2>
+        <table>
+            <tr>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Received By</th>
+                <th>Delivery Date</th>
+            </tr>
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['item_name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                        <td><?php echo htmlspecialchars($row['resident_name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['scheduled_date']); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="4" class="empty-message">No donated items history yet.</td>
+                </tr>
+            <?php endif; ?>
+        </table>
+
+        <a href="donor_dashboard.php" class="back-link">⬅️ Back to Dashboard</a>
+    </div>
+
 </body>
 </html>

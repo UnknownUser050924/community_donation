@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 10px;
         }
         input, select, textarea {
-            width: 100%;
+            width: 97.7%;
             padding: 10px;
             margin-top: 5px;
             border: 1px solid #ccc;

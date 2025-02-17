@@ -233,7 +233,7 @@ $result = $query->get_result();
         <div class="dropdown-content">
             <a href="profile.php">👤 Profile</a>
             <a href="donations.php">📦 My Donations</a>
-            <a href="donated_item_history">📜 Donated History</a>
+            <a href="donated_item_history.php">📜 Donated History</a>
             <a href="logout_donor.php">🚪 Logout</a>
         </div>
     </div>

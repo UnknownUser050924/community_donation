@@ -69,6 +69,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Item</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .edit-container {
+            background: #ffffff;
+            padding: 30px;
+            width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .edit-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            height: 40px; /* Ensure same height */
+            box-sizing: border-box; /* Ensures consistent width including padding */
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .update-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .update-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        #other_item_type_field {
+            display: none;
+        }
+    </style>
     <script>
         function toggleOtherItemType() {
             var itemType = document.getElementById("item_type").value;
@@ -78,13 +159,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </script>
 </head>
 <body>
+
+<div class="edit-container">
     <h2>Edit Item</h2>
+
     <form method="POST">
         <label for="name">Item Name:</label>
-        <input type="text" name="name" value="<?php echo htmlspecialchars($item['name']); ?>" required><br>
+        <input type="text" name="name" value="<?php echo htmlspecialchars($item['name']); ?>" required>
 
         <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" required><br>
+        <input type="number" name="quantity" value="<?php echo $item['quantity']; ?>" required>
 
         <label for="item_type">Item Type:</label>
         <select name="item_type" id="item_type" onchange="toggleOtherItemType()">
@@ -93,18 +177,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <option value="Electronics" <?php if ($item["item_type"] == "Electronics") echo "selected"; ?>>Electronics</option>
             <option value="Furniture" <?php if ($item["item_type"] == "Furniture") echo "selected"; ?>>Furniture</option>
             <option value="others">Others</option>
-        </select><br>
+        </select>
 
-        <div id="other_item_type_field" style="display: none;">
+        <div id="other_item_type_field">
             <label for="other_item_type">Specify Item Type:</label>
             <input type="text" name="other_item_type" placeholder="Enter item type">
         </div>
 
         <label for="state">State:</label>
-        <input type="text" name="state" value="<?php echo htmlspecialchars($item['state']); ?>" required><br>
+        <input type="text" name="state" value="<?php echo htmlspecialchars($item['state']); ?>" required>
 
         <label for="address">Address:</label>
-        <input type="text" name="address" value="<?php echo htmlspecialchars($item['address']); ?>" required><br>
+        <input type="text" name="address" value="<?php echo htmlspecialchars($item['address']); ?>" required>
 
         <label for="donor_id">Donor:</label>
         <select name="donor_id">
@@ -113,16 +197,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php echo htmlspecialchars($donor["name"]); ?>
                 </option>
             <?php } ?>
-        </select><br>
+        </select>
 
-        <button type="submit">Update Item</button>
+        <button type="submit" class="update-btn">Update Item</button>
     </form>
 
-    <a href="admin_items.php">Back to Items</a>
+    <a href="admin_items.php" class="back-link">Back to Items</a>
+</div>
 
-    <script>
-        // Ensure "Others" option shows input field if selected by default
-        toggleOtherItemType();
-    </script>
+<script>
+    // Ensure "Others" option shows input field if selected by default
+    toggleOtherItemType();
+</script>
+
 </body>
 </html>

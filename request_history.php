@@ -9,9 +9,9 @@ if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "resident") {
 
 $resident_id = $_SESSION["user_id"];
 
-// Corrected SQL Query: Use `scheduled_date` instead of `schedule_date`
+// Retrieve request history with additional details
 $query = $conn->prepare("
-    SELECT i.name AS item_name, r.scheduled_date 
+    SELECT i.name AS item_name, r.scheduled_date, r.quantity, r.item_type, r.state
     FROM requests r
     JOIN items i ON r.item_id = i.id
     WHERE r.resident_id = ? AND r.status = 'arrived at your location'
@@ -76,11 +76,17 @@ $result = $query->get_result();
     <table>
         <tr>
             <th>Item</th>
+            <th>Quantity</th>
+            <th>Item Type</th>
+            <th>State</th>
             <th>Scheduled Date</th>
         </tr>
         <?php while ($row = $result->fetch_assoc()): ?>
             <tr>
                 <td><?php echo htmlspecialchars($row['item_name']); ?></td>
+                <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                <td><?php echo htmlspecialchars($row['item_type']); ?></td>
+                <td><?php echo htmlspecialchars($row['state']); ?></td>
                 <td><?php echo htmlspecialchars($row['scheduled_date']); ?></td>
             </tr>
         <?php endwhile; ?>

@@ -19,7 +19,7 @@ $states_query = $conn->query("SELECT DISTINCT state FROM items");
 $item_types_query = $conn->query("SELECT DISTINCT item_type FROM items");
 
 // Fetch items based on filters
-$state_filter = $_GET['state'] ?? $user['state']; // Default to resident's state
+$state_filter = $_GET['state'] ?? $user['state'];
 $item_type_filter = $_GET['item_type'] ?? '';
 
 $sql = "SELECT * FROM items WHERE state = ?";
@@ -34,6 +34,9 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param(str_repeat("s", count($params)), ...$params);
 $stmt->execute();
 $items_result = $stmt->get_result();
+
+// Fetch all items (for Settings section)
+$all_items_query = $conn->query("SELECT * FROM items");
 ?>
 
 <!DOCTYPE html>
@@ -43,7 +46,6 @@ $items_result = $stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resident Dashboard</title>
     <style>
-        /* General Styles */
         * {
             margin: 0;
             padding: 0;
@@ -54,8 +56,6 @@ $items_result = $stmt->get_result();
             background: #f5f7fa;
             color: #333;
         }
-
-        /* Header Navigation */
         .header {
             background: #4A90E2;
             color: white;
@@ -106,9 +106,7 @@ $items_result = $stmt->get_result();
         .dropdown:hover .dropdown-content {
             display: block;
         }
-
-        /* Filter Section */
-        .filter-section {
+        .filter-section, .settings-section {
             background: white;
             padding: 20px;
             margin: 20px auto;
@@ -117,13 +115,8 @@ $items_result = $stmt->get_result();
             border-radius: 8px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .filter-section label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .filter-section select {
+        .filter-section select, .filter-section button {
             padding: 8px;
-            width: 200px;
             border-radius: 5px;
             border: 1px solid #ccc;
             margin-right: 10px;
@@ -131,16 +124,11 @@ $items_result = $stmt->get_result();
         .filter-section button {
             background: #4A90E2;
             color: white;
-            padding: 8px 15px;
-            border: none;
             cursor: pointer;
-            border-radius: 5px;
         }
         .filter-section button:hover {
             background: #357ABD;
         }
-
-        /* Item List */
         .item-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -182,6 +170,13 @@ $items_result = $stmt->get_result();
         }
         .item button:hover {
             background: #357ABD;
+        }
+
+        .settings-section h2 {
+            text-align: center; /* Centers the text */
+            font-size: 22px;
+            color: #4A90E2;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -227,20 +222,23 @@ $items_result = $stmt->get_result();
     </form>
 </div>
 
-<!-- Item List -->
-<div class="item-list">
-    <?php while ($item = $items_result->fetch_assoc()): ?>
-        <div class="item">
-            <h3><?php echo htmlspecialchars($item['name']); ?></h3>
-            <p>Type: <?php echo htmlspecialchars($item['item_type']); ?></p>
-            <p>Quantity: <?php echo htmlspecialchars($item['quantity']); ?></p>
-            <p>State: <?php echo htmlspecialchars($item['state']); ?></p>
-            <form method="POST" action="request_item.php">
-                <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
-                <button type="submit">Request</button>
-            </form>
-        </div>
-    <?php endwhile; ?>
+<!-- All Items Section -->
+<div class="settings-section">
+    <h2>All Items</h2>
+    <div class="item-list">
+        <?php while ($item = $all_items_query->fetch_assoc()): ?>
+            <div class="item">
+                <h3><?php echo htmlspecialchars($item['name']); ?></h3>
+                <p>Type: <?php echo htmlspecialchars($item['item_type']); ?></p>
+                <p>Quantity: <?php echo htmlspecialchars($item['quantity']); ?></p>
+                <p>State: <?php echo htmlspecialchars($item['state']); ?></p>
+                <form action="request_item.php" method="POST">
+                    <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
+                    <button type="submit">Request Item</button>
+                </form>
+            </div>
+        <?php endwhile; ?>
+    </div>
 </div>
 
 </body>
